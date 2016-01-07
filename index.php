@@ -5,7 +5,7 @@
     </head>
     <body>
         <?php
-        echo 'My App is here';
+        echo 'My App is here and this is different';
         ?>
     </body>
 </html>
