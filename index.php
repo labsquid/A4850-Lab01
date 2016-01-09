@@ -27,6 +27,8 @@
             echo "No winner yet. ";
             echo $game->pick_move($player);
         }
+
+        echo 'My App is here and this is different';
         ?>
         <h1><a href="?board=---------&player=o">Start a new game!</a></h1>
     </body>
