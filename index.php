@@ -34,6 +34,7 @@
     </body>
 </html>
 
+
 <?php
 //Game class, handles all the game functions
 class Game {
