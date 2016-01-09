@@ -55,8 +55,12 @@ class Game {
     } 
     //returns a single cell of the table, with either a letter or an <a> with
     //an appropriate link for game logic
-    function showCell($pos){
-            $player = $_GET['player'];
+    function showCell($pos){ 
+            if(ISSET($_GET['player'])){
+                $player = $_GET['player'];
+            }
+            else $player = 'o';
+            
             $token = $this->position[$pos];
             // deal with the easy case
             if ($token != "-") return '<td>'.$token.'</td>';
