@@ -33,14 +33,16 @@
 </html>
 
 <?php
-
+//Game class, handles all the game functions
 class Game {
     
     var $position;
-    
+    //Constructor requires the squares of the game in the format of a string
+    //being either dashes or x/o
     function __construct($squares){
         $this->position = \str_split($squares);
     }
+    //Shows the game board via echoing a table structure
     function display() {
         echo '<table cols=”3” style=”font­size:large; font­weight:bold”>';
         echo '<tr>'; // open the first row
@@ -51,7 +53,8 @@ class Game {
         echo '</tr>'; // close the last row
         echo '</table>';
     } 
-
+    //returns a single cell of the table, with either a letter or an <a> with
+    //an appropriate link for game logic
     function showCell($pos){
             $player = $_GET['player'];
             $token = $this->position[$pos];
@@ -61,7 +64,8 @@ class Game {
             $newposition = $this->position; // copy the original
             $newposition[$pos] = $player; // this would be their move
             $move = implode($newposition); // make a string from the board array
-            
+            //
+            //If/else that makes the <a> link to either x or o making a move
             if($player === 'x')  $link = $_SERVER["PHP_SELF"] . '?board='.$move.'&player=o';
             else $link = $_SERVER["PHP_SELF"] . '?board='.$move.'&player=x';
             // so return a cell containing an anchor and showing a hyphen
@@ -124,7 +128,7 @@ class Game {
     }
     
 }
-      
+    //Function for checking if the provided token has a won
     function winner($token){
     $won = false;
     //checking rows
