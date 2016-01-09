@@ -5,18 +5,30 @@
         <title>Lab 01</title>
     </head>
     <body>
-        <h1>You are player 'o'</h1>
+        
         <?php
-        $position;
+        if(ISSET($_GET['player'])){
+            $player = $_GET['player'];
+        }
+        else $player = 'o';
+        
+        echo "<h1>You are player " . $player . "</h1>";
+        
         if(isset($_GET['board'])){
             $position = $_GET['board'];
         }
+        else $position = "---------";
+        
         $game = new Game($position);
         $game->display();
-        if ($game->winner('x')) echo "You win";
-        else if ($game->winner('o')) echo "I win";
-        else echo "No winner yet";
+        if ($game->winner('x')) echo "X wins";
+        else if ($game->winner('o')) echo "O wins";
+        else {
+            echo "No winner yet. ";
+            echo $game->pick_move($player);
+        }
         ?>
+        <h1><a href="?board=---------&player=o">Start a new game!</a></h1>
     </body>
 </html>
 
@@ -41,21 +53,77 @@ class Game {
     } 
 
     function showCell($pos){
-          $token = $this->position[$pos];
+            $player = $_GET['player'];
+            $token = $this->position[$pos];
             // deal with the easy case
-            if ($token <> '­') return '<td>'.$token.'</td>';
+            if ($token != "-") return '<td>'.$token.'</td>';
             // now the hard case 
             $newposition = $this->position; // copy the original
-            $newposition[$pos] = 'o'; // this would be their move
+            $newposition[$pos] = $player; // this would be their move
             $move = implode($newposition); // make a string from the board array
-            $link = '/?board='.$move; // this is what we want the link to be
+            
+            if($player === 'x')  $link = $_SERVER["PHP_SELF"] . '?board='.$move.'&player=o';
+            else $link = $_SERVER["PHP_SELF"] . '?board='.$move.'&player=x';
             // so return a cell containing an anchor and showing a hyphen
-            return '<td><a href=”'.$link.'”>­</a></td>';
-    }    
-    function pick_move(){
-        
-    
+            return "<td><a href=" .$link . ">&ndash;</a></td>";
     }
+    
+    //takes current player as arg and suggests a winning move
+    function pick_move($player){
+    //setting opposite character for the person not playing
+    if($player == 'x'){
+        $oppositePlayer = 'o';
+    }
+    else{
+        $oppositePlayer = 'x';
+    }
+    //loop that checks if there are any horizontal winning moves
+    $suggestedRow = 0;
+    for($row=0; $row < 3;$row++){
+        $count = 0;
+        //Logic that requres 2 of 3 boxes to be the players letter, with any 
+        //opposing characters in the row ruling that row out
+        if($this->position[3 * $row] == $player) $count++;
+        else if($this->position[3 * $row] == $oppositePlayer) $count--;
+        if($this->position[(3 * $row) + 1] == $player) $count++;
+        else if($this->position[(3 * $row) + 1] == $oppositePlayer) $count--;
+        if($this->position[(3 * $row) + 2] == $player) $count++;
+        else if($this->position[(3 * $row) + 2] == $oppositePlayer) $count--;
+        //Only situation where count is 2 is where the player can make a winning move
+        //Therefore, suggests it
+        if ($count == 2){
+            $suggestedRow = $row + 1;
+        }
+    }
+    //loop that checks if there are any vertical winning moves
+    $suggestedCol = 0;
+    for($col=0; $col < 3;$col++){
+        $count = 0;
+        //Logic that requres 2 of 3 boxes to be the players letter, with any 
+        //opposing characters in the column ruling that column out
+        if($this->position[$col] == $player) $count++;
+        else if($this->position[$col] == $oppositePlayer) $count --;
+        if($this->position[$col + 3] == $player) $count++;
+        else if($this->position[$col + 3] == $oppositePlayer) $count --;
+        if($this->position[$col + 6] == $player) $count++;
+        else if($this->position[$col + 6] == $oppositePlayer) $count --;
+        //Only situation where count is 2 is where the player can make a winning move
+        if($count == 2){
+            $suggestedCol = $col + 1;
+        }
+    }
+    //if either loop returns a non-zero value, suggests that row/col or nothing
+    if($suggestedRow > 0){
+        return 'I suggest row ' . $suggestedRow;
+    }
+    else if($suggestedCol > 0){
+        return 'I suggest column ' . $suggestedCol;
+    }
+    else{
+        return "Insufficient data for reccomendation. Go anywhere.";
+    }
+    
+}
       
     function winner($token){
     $won = false;
